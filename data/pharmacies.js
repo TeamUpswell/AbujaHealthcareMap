@@ -1,7 +1,8 @@
-pharmacies = [
+const pharmacies = [
     {
         "id": "p1",
-        "name": "Em-Zik pharmacy & Supermarket",
+        "name": "Em-Zik pharmacy and Supermarket",
+        "lga": "AMAC",
         "address": "Lugbe Zone 5, Along Airport Road, Lugbe, Lugbe 900107, Federal Capital Territory, Nigeria",
         "latitude": 8.9753469,
         "longitude": 7.3756843
@@ -9,6 +10,7 @@ pharmacies = [
     {
         "id": "p2",
         "name": "SONTALLY PHARMACY",
+        "lga": "AMAC",
         "address": "315 PHASE 2 ACO/AMAC HOUSING ESTATE, AIRPORT ROAD, ABUJA",
         "latitude": 8.9450526,
         "longitude": 7.2872428
@@ -16,6 +18,7 @@ pharmacies = [
     {
         "id": "p3",
         "name": "Befit Pharmacy",
+        "lga": "AMAC",
         "address": "Chika entrance, Airport Road, Abuja.",
         "latitude": 9.0015813,
         "longitude": 7.4108297
@@ -23,6 +26,7 @@ pharmacies = [
     {
         "id": "p4",
         "name": "Sunamot Pharmacy",
+        "lga": "AMAC",
         "address": "ACO Estate, Airport Road, Abuja",
         "latitude": 8.9428625,
         "longitude": 7.324413
@@ -30,6 +34,7 @@ pharmacies = [
     {
         "id": "p5",
         "name": "Zinni Pharmacy Ltd.",
+        "lga": "AMAC",
         "address": "Lugbe Plaza, Lugbe 900107, Federal Capital Territory, Nigeria",
         "latitude": 8.997675,
         "longitude": 7.3496131
@@ -37,6 +42,7 @@ pharmacies = [
     {
         "id": "p6",
         "name": "Imppro Pharmaceuticals LTD (Medicare Marche)",
+        "lga": "AMAC",
         "address": "95, Trademore Estate, Lugbe, Abuja",
         "latitude": 8.9571242,
         "longitude": 7.367954
@@ -45,12 +51,14 @@ pharmacies = [
         "id": "p7",
         "name": "Morden Times Pharmacy",
         "address": "Penthouse Estate, Lugbe, Abuja",
+        "lga": "AMAC",
         "latitude": 8.9650653,
         "longitude": 7.3833023
     },
     {
         "id": "p8",
         "name": "Datura Pharmacy Abuja",
+        "lga": "AMAC",
         "address": "Beside Customary Court, Galadimawa village",
         "latitude": 8.9927126,
         "longitude": 7.4239399
@@ -58,6 +66,7 @@ pharmacies = [
     {
         "id": "p9",
         "name": "LILIFIED PHARMACY",
+        "lga": "AMAC",
         "address": "SUNNY VALE ESTATE LOKOGOMA",
         "latitude": 8.9817433,
         "longitude": 7.4376037
@@ -65,6 +74,7 @@ pharmacies = [
     {
         "id": "p10",
         "name": "Sante Bene Rx",
+        "lga": "AMAC",
         "address": "Gudu Junction Behind Nnpc Apo, Abuja, FCT",
         "latitude": 9.0008359,
         "longitude": 7.4720833
@@ -72,6 +82,7 @@ pharmacies = [
     {
         "id": "p11",
         "name": "Jomed Pharmacy",
+        "lga": "AMAC",
         "address": "Apo Sunrise Plaza, Apo Resettlement Abuja",
         "latitude": 8.9870662,
         "longitude": 7.4983672
@@ -79,6 +90,7 @@ pharmacies = [
     {
         "id": "p12",
         "name": "Emmitex Medical Store",
+        "lga": "AMAC",
         "address": "Wumba, behind His Grace pavilion estate, Apo, Abuja",
         "latitude": 8.9668559,
         "longitude": 7.4863656
@@ -86,6 +98,7 @@ pharmacies = [
     {
         "id": "p13",
         "name": "ShowCare Pharmacy",
+        "lga": "AMAC",
         "address": "Loko 10 stores, Lokogoma",
         "latitude": 8.969236,
         "longitude": 7.4760925
@@ -93,6 +106,7 @@ pharmacies = [
     {
         "id": "p14",
         "name": "Cmargs Pharmacy",
+        "lga": "AMAC",
         "address": "First avenue, Efab Estate shop 1, Lokogoma, Abuja",
         "latitude": 9.0545309,
         "longitude": 7.4013162
@@ -100,6 +114,7 @@ pharmacies = [
     {
         "id": "p15",
         "name": "MAC-CHIZ PHARMACY AND STORES LTD KUJE",
+        "lga": "Kuje",
         "address": "Uwaa Plaza, Beside First Bank, Kuje, Abuja",
         "latitude": 8.8821438,
         "longitude": 7.2275336
@@ -107,6 +122,7 @@ pharmacies = [
     {
         "id": "p16",
         "name": "Mac-Chiz Pharmacy Pegi",
+        "lga": "Kuje",
         "address": "JOHNSLOT PLAZA, PEGI ESTATE, AFTER 1000 UNIT GATE KUJE ABUJA",
         "latitude": 8.8291304,
         "longitude": 7.2683492
@@ -114,6 +130,7 @@ pharmacies = [
     {
         "id": "p17",
         "name": "Nesterglaz Pharmacy",
+        "lga": "AMAC",
         "address": "JIKwoyi ROAD",
         "latitude": 8.9842515,
         "longitude": 7.5638474
@@ -121,6 +138,7 @@ pharmacies = [
     {
         "id": "p18",
         "name": "Elot Pharmacy",
+        "lga": "AMAC",
         "address": "XGP2+MCV, Apo, Abuja 900110, Federal Capital Territory, Nigeria",
         "latitude": 8.9867375,
         "longitude": 7.5010469
@@ -128,6 +146,7 @@ pharmacies = [
     {
         "id": "p19",
         "name": "Bamak Pharmacy",
+        "lga": "AMAC",
         "address": "House 8, Zone D. Apo Resettlement, Abuja",
         "latitude": 8.9694692,
         "longitude": 7.5045683
@@ -135,6 +154,7 @@ pharmacies = [
     {
         "id": "p20",
         "name": "Keecee Pharmacy",
+        "lga": "AMAC",
         "address": "Opposite Catholic church, Kabusa Village Abuja",
         "latitude": 9.0562646,
         "longitude": 7.4985259
@@ -142,6 +162,7 @@ pharmacies = [
     {
         "id": "p21",
         "name": "Beta Pharmacy",
+        "lga": "AMAC",
         "address": "Shop 2 Area 2 Shopping Complex Garki",
         "latitude": 9.0356843,
         "longitude": 7.4778649
@@ -149,6 +170,7 @@ pharmacies = [
     {
         "id": "p22",
         "name": "Pyramid Pharmacy",
+        "lga": "AMAC",
         "address": "73 Samuel Ladoke Akintola Boulevard, Garki",
         "latitude": 9.020915,
         "longitude": 7.4855361
