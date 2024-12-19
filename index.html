@@ -149,26 +149,32 @@
         function handleMarkerClick(locationName, locationCategory, locationId = null) {
             console.log(`Marker clicked: ${locationName}, Category: ${locationCategory}, ID: ${locationId}`);
             
+            // Concatenate ID and Name for the event label
+            const eventLabel = `${locationId} - ${locationName}`;
+            
             // Prepare event parameters
             const eventParams = {
                 'event_category': 'Map Interaction',
                 'event_action': 'marker_click',
-                'event_label': locationId,
+                'event_label': eventLabel, // Combined ID and Name
                 'value': 1
             };
             
             // Send event to Google Analytics
             gtag('event', 'marker_click', eventParams);
-        }
+        }        
 
         // Function to trigger GA event for link clicks
-        function triggerGA(locationId, locationType) {
-            console.log(`Triggering GA event for ${locationType} with ID: ${locationId}`);
+        function triggerGA(locationId, locationType, locationName) {
+            console.log(`Triggering GA event for ${locationType} with ID: ${locationId} and Name: ${locationName}`);
             if (typeof gtag === 'function') {
+                // Concatenate ID and Name for the event label
+                const eventLabel = `${locationId} - ${locationName}`;
+                
                 gtag('event', 'link_click', {
                     'event_category': 'Map Interaction',
                     'event_action': 'link_click',
-                    'event_label': locationId,
+                    'event_label': eventLabel, // Combined ID and Name
                     'value': 1
                 });
                 // No alert needed for user experience
@@ -286,7 +292,10 @@
                         <h3 style="margin-top: 0;">${center.name}</h3>
                         <p><strong>Address:</strong> ${center.address}</p>
                         <p><strong>LGA:</strong> ${center.lga}</p>
-                        <a href="https://www.google.com/maps?q=${center.latitude},${center.longitude}" target="_blank" onclick="triggerGA('${center.id}', 'healthcenter')" style="color: #007bff; text-decoration: none; font-size: 14px;">
+                        <a href="https://www.google.com/maps?q=${center.latitude},${center.longitude}" 
+                           target="_blank" 
+                           onclick="triggerGA('${center.id}', 'healthcenter', '${center.name}')" 
+                           style="color: #007bff; text-decoration: none; font-size: 14px;">
                             View on Google Maps
                         </a>
                     </div>
@@ -323,7 +332,10 @@
                     <div style="border-radius: 8px; overflow: hidden; background: #fff; padding: 8px 10px; margin: 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
                         <h3 style="margin: 0 0 5px; font-size: 16px;">${pharmacy.name}</h3>
                         <p style="margin: 0 0 8px; font-size: 14px;"><strong>Address:</strong> ${pharmacy.address}</p>
-                        <a href="https://www.google.com/maps?q=${pharmacy.latitude},${pharmacy.longitude}" target="_blank" onclick="triggerGA('${pharmacy.id}', 'pharmacy')" style="color: #007bff; text-decoration: none; font-size: 14px;">
+                        <a href="https://www.google.com/maps?q=${pharmacy.latitude},${pharmacy.longitude}" 
+                           target="_blank" 
+                           onclick="triggerGA('${pharmacy.id}', 'pharmacy', '${pharmacy.name}')" 
+                           style="color: #007bff; text-decoration: none; font-size: 14px;">
                             View on Google Maps
                         </a>
                     </div>
@@ -348,16 +360,25 @@
 
         // Function to center map on specific location if ID is in URL
         function centerMapOnLocation() {
-            const type = getUrlParameter('type'); // 'pharmacy' or 'healthcenter'
             const id = getUrlParameter('id');     // e.g., 'p1', 'c1'
 
-            if (type && id) {
+            if (id) {
                 let marker;
+                let locationName = '';
 
-                if (type === 'pharmacy') {
+                // Determine type based on ID prefix
+                if (id.startsWith('p')) {
                     marker = pharmacyMarkers[id];
-                } else if (type === 'healthcenter') {
+                    if (marker) {
+                        locationName = marker.getTitle();
+                    }
+                    console.log(`Found pharmacy marker for ID: ${id}`);
+                } else if (id.startsWith('c')) {
                     marker = healthcenterMarkers[id];
+                    if (marker) {
+                        locationName = marker.getTitle();
+                    }
+                    console.log(`Found health center marker for ID: ${id}`);
                 }
 
                 if (marker) {
@@ -366,16 +387,18 @@
 
                     // Open the info window by triggering a click event on the marker
                     google.maps.event.trigger(marker, 'click');
+                    console.log(`Opened info window for ID: ${id}`);
 
-                    // Trigger GA event for direct link click
+                    // Trigger GA event for direct link click with concatenated ID and Name
+                    console.log(`Sending direct_marker_click event for ID: ${id} and Name: ${locationName}`);
                     gtag('event', 'direct_marker_click', {
                         'event_category': 'Map Interaction',
                         'event_action': 'direct_marker_click',
-                        'event_label': id,
+                        'event_label': `${id} - ${locationName}`, // Combined ID and Name
                         'value': 1
                     });
                 } else {
-                    console.warn(`No marker found for type: ${type}, id: ${id}`);
+                    console.warn(`No marker found with id: ${id}`);
                 }
             }
         }
