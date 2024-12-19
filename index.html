@@ -136,15 +136,23 @@
         let infoWindow;
         
         // Function to handle marker clicks
-function handleMarkerClick(locationName, locationCategory, lga) {
-    console.log(`Marker clicked: ${locationName}, Category: ${locationCategory}, lga: ${lga}`); // Debugging line
-    gtag('event', 'marker_click', { // GA4-compliant event name
-        'location_category': locationCategory, // e.g., 'healthcare_center' or 'pharmacy'
-        'location_name': locationName, // Specific name of the location
-        'lga': lga, // Local Government Area
-        'value': 1 // Optional: numerical value for the event
-    });
-}
+        function handleMarkerClick(locationName, locationCategory, lga = null) {
+            console.log(`Marker clicked: ${locationName}, Category: ${locationCategory}, lga: ${lga}`);
+            
+            // Prepare event parameters
+            const eventParams = {
+                'location_category': locationCategory,
+                'location_name': locationName,
+                'value': 1
+            };
+            
+            // Add 'lga' only if it's provided
+            if (lga) {
+                eventParams['lga'] = lga;
+            }
+            
+            gtag('event', 'marker_click', eventParams);
+        }        
         
         function initMap() {
             const styledMapType = new google.maps.StyledMapType([
