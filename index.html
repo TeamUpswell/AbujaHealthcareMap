@@ -138,51 +138,77 @@
     
     <!-- Main JavaScript -->
     <script>
+        // 1. Declare Global Variables
         let map;
         let infoWindow;
 
-        // Marker storage objects
         const pharmacyMarkers = {};       // Stores pharmacy markers keyed by 'id'
         const healthcenterMarkers = {};   // Stores health center markers keyed by 'id'
 
-        // Function to handle marker clicks and send GA events
-        function handleMarkerClick(locationName, locationCategory, locationId = null) {
+        // 2. Utility Function to Escape HTML Special Characters
+        function escapeHTML(str) {
+            if (typeof str !== 'string') {
+                return str;
+            }
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        // 3. Function to Handle Marker Clicks and Send GA Events
+        function handleMarkerClick(locationName, locationCategory, locationId = null, locationLga = '', locationAddress = '', latitude = 0, longitude = 0) {
             console.log(`Marker clicked: ${locationName}, Category: ${locationCategory}, ID: ${locationId}`);
             
             // Concatenate ID and Name for the event label
             const eventLabel = `${locationId} - ${locationName}`;
             
-            // Prepare event parameters
+            // Prepare event parameters with additional variables
             const eventParams = {
                 'event_category': 'Map Interaction',
                 'event_action': 'marker_click',
                 'event_label': eventLabel, // Combined ID and Name
-                'value': 1
+                'value': 1,
+                // Custom Dimensions (replace 'dimension1', etc., with actual indices from GA)
+                'dimension1': locationLga,
+                'dimension2': locationAddress,
+                'dimension3': latitude.toString(),
+                'dimension4': longitude.toString()
             };
             
             // Send event to Google Analytics
             gtag('event', 'marker_click', eventParams);
-        }        
+        }
 
-        // Function to trigger GA event for link clicks
-        function triggerGA(locationId, locationType, locationName) {
+        // 4. Function to Trigger GA Event for Link Clicks
+        function triggerGA(locationId, locationType, locationName, locationLga = '', locationAddress = '', latitude = 0, longitude = 0) {
             console.log(`Triggering GA event for ${locationType} with ID: ${locationId} and Name: ${locationName}`);
             if (typeof gtag === 'function') {
                 // Concatenate ID and Name for the event label
                 const eventLabel = `${locationId} - ${locationName}`;
                 
-                gtag('event', 'link_click', {
+                // Prepare event parameters with additional variables
+                const eventParams = {
                     'event_category': 'Map Interaction',
                     'event_action': 'link_click',
                     'event_label': eventLabel, // Combined ID and Name
-                    'value': 1
-                });
+                    'value': 1,
+                    // Custom Dimensions (replace 'dimension1', etc., with actual indices from GA)
+                    'dimension1': locationLga,
+                    'dimension2': locationAddress,
+                    'dimension3': latitude.toString(),
+                    'dimension4': longitude.toString()
+                };
+                
+                gtag('event', 'link_click', eventParams);
                 // No alert needed for user experience
             } else {
                 console.error('Google Analytics is not initialized.');
             }
         }
 
+        // 5. Map Initialization Function
         function initMap() {
             const styledMapType = new google.maps.StyledMapType([
                 {
@@ -270,6 +296,7 @@
             centerMapOnLocation();
         }
 
+        // 6.a. Function to Add Healthcare Centers to the Map
         function addCentersToMap(centers) {
             centers.forEach(center => {
                 const position = { lat: center.latitude, lng: center.longitude };
@@ -287,14 +314,19 @@
                 // Store marker with its ID
                 healthcenterMarkers[center.id] = marker;
 
+                // Escape HTML special characters in name and address
+                const safeName = escapeHTML(center.name);
+                const safeAddress = escapeHTML(center.address);
+                const safeLga = escapeHTML(center.lga);
+
                 const infoContent = `
                     <div style="border-radius: 8px; overflow: hidden; background: #fff; padding: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
-                        <h3 style="margin-top: 0;">${center.name}</h3>
-                        <p><strong>Address:</strong> ${center.address}</p>
-                        <p><strong>LGA:</strong> ${center.lga}</p>
+                        <h3 style="margin-top: 0;">${safeName}</h3>
+                        <p><strong>Address:</strong> ${safeAddress}</p>
+                        <p><strong>LGA:</strong> ${safeLga}</p>
                         <a href="https://www.google.com/maps?q=${center.latitude},${center.longitude}" 
                            target="_blank" 
-                           onclick="triggerGA('${center.id}', 'healthcenter', '${center.name}')" 
+                           onclick="triggerGA('${center.id}', 'healthcenter', '${safeName}', '${safeLga}', '${safeAddress}', ${center.latitude}, ${center.longitude})" 
                            style="color: #007bff; text-decoration: none; font-size: 14px;">
                             View on Google Maps
                         </a>
@@ -305,12 +337,13 @@
                     infoWindow.setContent(infoContent);
                     infoWindow.open(map, marker);
 
-                    // Track marker clicks with 'id' and 'type'
-                    handleMarkerClick(center.name, 'healthcenter', center.id);
+                    // Track marker clicks with concatenated ID and Name, and additional variables
+                    handleMarkerClick(center.name, 'healthcenter', center.id, center.lga, center.address, center.latitude, center.longitude);
                 });
             });
         }
 
+        // 6.b. Function to Add Pharmacies to the Map
         function addPharmaciesToMap(pharmacies) {
             pharmacies.forEach(pharmacy => {
                 const position = { lat: pharmacy.latitude, lng: pharmacy.longitude };
@@ -328,13 +361,19 @@
                 // Store marker with its ID
                 pharmacyMarkers[pharmacy.id] = marker;
 
+                // Escape HTML special characters in name and address
+                const safeName = escapeHTML(pharmacy.name);
+                const safeAddress = escapeHTML(pharmacy.address);
+                const safeLga = escapeHTML(pharmacy.lga);
+
                 const infoContent = `
                     <div style="border-radius: 8px; overflow: hidden; background: #fff; padding: 8px 10px; margin: 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
-                        <h3 style="margin: 0 0 5px; font-size: 16px;">${pharmacy.name}</h3>
-                        <p style="margin: 0 0 8px; font-size: 14px;"><strong>Address:</strong> ${pharmacy.address}</p>
+                        <h3 style="margin: 0 0 5px; font-size: 16px;">${safeName}</h3>
+                        <p style="margin: 0 0 8px; font-size: 14px;"><strong>Address:</strong> ${safeAddress}</p>
+                        <p><strong>LGA:</strong> ${safeLga}</p>
                         <a href="https://www.google.com/maps?q=${pharmacy.latitude},${pharmacy.longitude}" 
                            target="_blank" 
-                           onclick="triggerGA('${pharmacy.id}', 'pharmacy', '${pharmacy.name}')" 
+                           onclick="triggerGA('${pharmacy.id}', 'pharmacy', '${safeName}', '${safeLga}', '${safeAddress}', ${pharmacy.latitude}, ${pharmacy.longitude})" 
                            style="color: #007bff; text-decoration: none; font-size: 14px;">
                             View on Google Maps
                         </a>
@@ -344,13 +383,13 @@
                     infoWindow.setContent(infoContent);
                     infoWindow.open(map, marker);
                 
-                    // Track pharmacy clicks with 'id' and 'type'
-                    handleMarkerClick(pharmacy.name, 'pharmacy', pharmacy.id);
+                    // Track pharmacy clicks with concatenated ID and Name, and additional variables
+                    handleMarkerClick(pharmacy.name, 'pharmacy', pharmacy.id, pharmacy.lga, pharmacy.address, pharmacy.latitude, pharmacy.longitude);
                 });
             });
         }
 
-        // Function to parse URL parameters
+        // 7. Function to Parse URL Parameters
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -358,44 +397,69 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Function to center map on specific location if ID is in URL
+        // 8. Function to Center Map on Specific Location if ID is in URL
         function centerMapOnLocation() {
             const id = getUrlParameter('id');     // e.g., 'p1', 'c1'
-
+        
             if (id) {
                 let marker;
                 let locationName = '';
-
+                let locationLga = '';
+                let locationAddress = '';
+                let latitude = 0;
+                let longitude = 0;
+        
                 // Determine type based on ID prefix
                 if (id.startsWith('p')) {
                     marker = pharmacyMarkers[id];
                     if (marker) {
                         locationName = marker.getTitle();
+                        // Assuming you have access to the pharmacy data to get lga and address
+                        const pharmacyData = pharmacies.find(pharmacy => pharmacy.id === id);
+                        if (pharmacyData) {
+                            locationLga = pharmacyData.lga;
+                            locationAddress = pharmacyData.address;
+                            latitude = pharmacyData.latitude;
+                            longitude = pharmacyData.longitude;
+                        }
                     }
                     console.log(`Found pharmacy marker for ID: ${id}`);
                 } else if (id.startsWith('c')) {
                     marker = healthcenterMarkers[id];
                     if (marker) {
                         locationName = marker.getTitle();
+                        // Assuming you have access to the healthcareCenters data to get lga and address
+                        const centerData = healthcareCenters.find(center => center.id === id);
+                        if (centerData) {
+                            locationLga = centerData.lga;
+                            locationAddress = centerData.address;
+                            latitude = centerData.latitude;
+                            longitude = centerData.longitude;
+                        }
                     }
                     console.log(`Found health center marker for ID: ${id}`);
                 }
-
+        
                 if (marker) {
                     map.setCenter(marker.getPosition());
                     map.setZoom(15); // Adjust zoom level as needed
-
+        
                     // Open the info window by triggering a click event on the marker
                     google.maps.event.trigger(marker, 'click');
                     console.log(`Opened info window for ID: ${id}`);
-
+        
                     // Trigger GA event for direct link click with concatenated ID and Name
                     console.log(`Sending direct_marker_click event for ID: ${id} and Name: ${locationName}`);
                     gtag('event', 'direct_marker_click', {
                         'event_category': 'Map Interaction',
                         'event_action': 'direct_marker_click',
                         'event_label': `${id} - ${locationName}`, // Combined ID and Name
-                        'value': 1
+                        'value': 1,
+                        // Custom Dimensions (replace 'dimension1', etc., with actual indices from GA)
+                        'dimension1': locationLga,
+                        'dimension2': locationAddress,
+                        'dimension3': latitude.toString(),
+                        'dimension4': longitude.toString()
                     });
                 } else {
                     console.warn(`No marker found with id: ${id}`);
