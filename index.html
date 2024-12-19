@@ -145,7 +145,7 @@
         const pharmacyMarkers = {};       // Stores pharmacy markers keyed by 'id'
         const healthcenterMarkers = {};   // Stores health center markers keyed by 'id'
 
-        // Function to handle marker clicks
+        // Function to handle marker clicks and send GA events
         function handleMarkerClick(locationName, locationCategory, locationId = null) {
             console.log(`Marker clicked: ${locationName}, Category: ${locationCategory}, ID: ${locationId}`);
             
@@ -159,10 +159,11 @@
             
             // Send event to Google Analytics
             gtag('event', 'marker_click', eventParams);
-        }        
+        }
 
-        // Function to trigger Google Analytics event manually (for "View on Google Maps" link)
+        // Function to trigger GA event for link clicks
         function triggerGA(locationId, locationType) {
+            console.log(`Triggering GA event for ${locationType} with ID: ${locationId}`);
             if (typeof gtag === 'function') {
                 gtag('event', 'link_click', {
                     'event_category': 'Map Interaction',
